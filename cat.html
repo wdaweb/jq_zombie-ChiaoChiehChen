@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;300;400;500;700;900&display=swap"
+    rel="stylesheet">
+  <title>貓捉老鼠</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+
+    #container {
+      width: 100vw;
+      height: 100vh;
+      background-image: url('./images/sewage-sewer.jpg');
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      overflow: hidden;
+    }
+
+    #first,
+    #second {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #first {
+      padding-top: 4%;
+      padding-bottom: 5px;
+      
+    }
+
+    #btn-start {
+      width: 180px;
+      height: 70px;
+      font-size: 32px;
+      color: chocolate;
+      border: 3px groove brown;
+      border-radius: 45px;
+      box-shadow: 2px 2px 5px rgba(102, 34, 0, 0.5);
+      cursor: pointer;
+      
+      
+    }
+
+    #btn-start:hover {
+      background-color: #FFFF37;
+      transform: scale(1.2);
+    }
+
+    #second h1 {
+      margin-left: 2%;
+    }
+
+    #score,
+    #time {
+      margin-left: 10px;
+    }
+
+    #game {
+      width: 100%;
+      height: 750px;
+      position: relative;
+      overflow: hidden;
+      cursor: url('./images/popcat.png')50 50, auto;
+    }
+
+    #game img {
+      position: absolute;
+    }
+
+    .mouse {
+      z-index: 1000;
+    }
+
+    .fish {
+      z-index: 1000;
+    }
+
+
+    .cockroach {
+      z-index: 10000;
+    }
+
+    #cat {
+      width: 20%;
+      position: absolute;
+      top: 15%;
+      left: 10%
+    }
+
+    .meow {
+      width: 80px;
+      height: 80px;
+      border: 2px solid #aaa;
+      border-radius: 50%;
+      line-height: 80px;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      margin: auto;
+      background-color: #aaa;
+      position: absolute;
+      top: 15%;
+      left: 25%;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container">
+    <div id="first">
+      <input id="btn-start" type="button" value="開始遊戲">
+    </div>
+    <div id="second">
+      <h1>分數<span id="score">0</span>分</h1>
+      <h1>倒數<span id="time">0</span>秒</h1>
+    </div>
+    <div id="game">
+      <img id="cat" src="./images/cat.gif">
+      <div class="meow">meow</div>
+    </div>
+
+  </div>
+
+
+  <script src="jquery-3.6.0.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    let score = 0
+    let countdown = 30
+    let timer = 0
+
+    const audio = new Audio()
+
+    const move = (mouse) => {
+      // const top1 = `${Math.round(Math.random() * 70)}%`
+      const left1 = `${Math.round(Math.random() * 70)}%`
+      mouse.stop().animate({
+        left: '+=100vh'
+        // top:top1
+      }, 3000, 'linear', function () {
+        move(mouse)
+      })
+    }
+
+    // const move2 = (fish) => {
+    //   const top2 = `${Math.round(Math.random() * 50)}%`
+    //   fish.stop().animate({
+    //     top2,
+    //     right2
+    //   }, 5000, function(){
+    //     move2(fish)
+    //   })
+    // }
+
+    const move3 = (cockroach) => {
+      const bottom = `${Math.round(Math.random() * 60)}%`
+      const left = `${Math.round(Math.random() * 60)}%`
+      cockroach.stop().animate({
+        left,
+        bottom
+      }, 3000, function () {
+        move3(cockroach)
+      })
+    }
+
+    $('#btn-start').click(function () {
+      $(this).attr('disabled', true)
+      score = 0
+      $('#score').text(score)
+      countdown = 30
+      $('#time').text(countdown).css('color', 'red')
+
+      $('#cat').click(function () {
+        audio.src = './images/meow.mp3'
+        audio.play()
+        $('.meow').toggle()
+      })
+
+      timer = setInterval(function () {
+        countdown--
+        $('#time').text(countdown).css('color', 'red')
+
+        let random1 = Math.round(Math.random() * 10)
+        if (random1 > 5 && $("#game .mouse").length < 5) {
+          const top1 = `${Math.round(Math.random() * 70)}%`
+          const left1 = `${Math.round(Math.random() * 70)}%`
+          const mouse = $(`<img class="mouse" src="./images/rat.gif" style=left:${left1};top:${top1};width
+          :10%">`)
+          $('#game').append(mouse)
+          move(mouse)
+        }
+
+        let random2 = Math.round(Math.random() * 15)
+        if (random2 > 11 && $("#game .fish").length < 2) {
+          const right2 = `${Math.round(Math.random() * 60)}%`
+          const fish = $(`<img class="fish" src="./images/fish.gif" style="top:85%;right:${right2};width
+          :10%">`)
+          $('#game').append(fish)
+          $('.fish').fadeTo(8000, 0)
+          // move2(fish)
+        }
+
+        let random3 = Math.round(Math.random() * 10)
+        if (random3 > 5) {
+          const bottom = `${Math.round(Math.random() * 60)}%`
+          const left = `${Math.round(Math.random() * 60)}%`
+          const cockroach = $(`<img class="cockroach" src="./images/cockroach.gif" style="bottom:${bottom};left:${left};width:5%">`)
+          $('#game').append(cockroach)
+          move3(cockroach)
+        }
+
+        if (countdown <= 0) {
+          clearInterval(timer)
+          $('#game img').remove()
+          $('#btn-start').attr('disabled', false)
+          Swal.fire({
+            icon: 'info',
+            title: 'Game Over',
+            text: `恭喜獲得${score}分`
+          })
+        }
+      }, 1000)
+    })
+
+    $('#game').on('click', '.mouse', function () {
+      $(this).attr('src', './blood.png')
+      $(this).css('width', '225px')
+      $(this).stop()
+      $(this).css({
+        'user-select': 'none',
+        '-webkit-user-drag': 'none',
+        'pointer-events': 'none'
+      })
+      $(this).removeClass('mouse').addClass('blood')
+      score += 2
+      $('#score').text(score)
+    })
+
+    $('#game').on('click', '.fish', function () {
+      $(this).attr('src', './images/yummy.png')
+      $(this).css('width', '64px')
+      $(this).stop()
+      $(this).fadeTo(2000, 0)
+      $(this).removeClass('fish').addClass('yummy')
+      score += 3
+      $('#score').text(score)
+    })
+
+    $('#game').on('click', '.cockroach', function () {
+      $(this).attr('src', './images/deadcockroach.png')
+      $(this).stop()
+      $(this).css({
+        'user-select': 'none',
+        '-webkit-user-drag': 'none',
+        'pointer-events': 'none'
+      })
+      $(this).removeClass('cockroach').addClass('deadCockroach')
+      score--
+      $('#score').text(score)
+    })
+
+    $('#game').on('click', '#cat', function () {
+      $(this).css({
+        '-webkit-user-drag': 'none',
+      })
+      score++
+      $('#score').text(score)
+    })
+
+
+
+
+  </script>
+</body>
+
+</html>
